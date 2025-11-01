@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mus_law/screens/profile_screen.dart';
-import 'package:mus_law/widgets/bottom_player.dart';
-import 'package:mus_law/widgets/music_card.dart';
+import 'package:mus_law/presentation/screens/profile_screen.dart';
+import 'package:mus_law/presentation/widgets/bottom_player.dart';
+import 'package:mus_law/presentation/widgets/music_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
