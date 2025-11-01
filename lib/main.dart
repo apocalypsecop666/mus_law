@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+import 'package:mus_law/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Mus Law',
       theme: ThemeData(primarySwatch: Colors.indigo, useMaterial3: true),
       home: const LoginScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
