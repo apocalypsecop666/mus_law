@@ -17,13 +17,18 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<UserEntity?> login(String email, String password) async {
     final userData = _storage.get('users_box', email);
-    if (userData is Map<String, dynamic> && userData['password'] == password) {
+    
+    if (userData != null && 
+        userData['password'] != null && 
+        userData['password'] == password) {
+      
       final user = UserModel(
-        id: userData['id'] as String,
-        name: userData['name'] as String,
-        email: userData['email'] as String,
-        password: userData['password'] as String,
+        id: userData['id'].toString(),
+        name: userData['name'].toString(),
+        email: userData['email'].toString(),
+        password: userData['password'].toString(),
       );
+      
       await _storage.save('current_user_box', 'current_user', user.toJson());
       return user;
     }
@@ -37,14 +42,14 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Future<UserEntity?> getCurrentUser() async {
-    final dynamic userData = _storage.get('current_user_box', 'current_user');
-
-    if (userData is Map<String, dynamic>) {
+    final userData = _storage.get('current_user_box', 'current_user');
+    
+    if (userData != null) {
       return UserModel(
-        id: userData['id'] as String,
-        name: userData['name'] as String,
-        email: userData['email'] as String,
-        password: userData['password'] as String,
+        id: userData['id'].toString(),
+        name: userData['name'].toString(),
+        email: userData['email'].toString(),
+        password: userData['password'].toString(),
       );
     }
     return null;

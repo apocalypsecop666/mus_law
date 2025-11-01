@@ -32,12 +32,13 @@ class UserRepository implements IUserRepository {
   @override
   Future<UserEntity?> getUser(String email) async {
     final userData = _storage.get('users_box', email);
-    if (userData is Map<String, dynamic>) {
+    if (userData != null) {
       return UserModel(
-          id: userData['id'] as String,
-          name: userData['name'] as String,
-          email: userData['email'] as String,
-          password: userData['password'] as String,);
+        id: userData['id'].toString(),
+        name: userData['name'].toString(),
+        email: userData['email'].toString(),
+        password: userData['password'].toString(),
+      );
     }
     return null;
   }
