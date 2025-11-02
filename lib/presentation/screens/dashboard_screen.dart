@@ -5,14 +5,14 @@ import 'package:mus_law/presentation/widgets/connection_status.dart';
 import 'package:mus_law/presentation/widgets/temperature_widget.dart';
 import 'package:provider/provider.dart';
 
-class IotDashboardScreen extends StatefulWidget {
-  const IotDashboardScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
 
   @override
-  State<IotDashboardScreen> createState() => _IotDashboardScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _IotDashboardScreenState extends State<IotDashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
@@ -33,7 +33,7 @@ class _IotDashboardScreenState extends State<IotDashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IoT Dashboard'),
+        title: const Text('Weather Dashboard'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

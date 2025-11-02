@@ -40,7 +40,7 @@ class MusicApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'IoT Music Player',
+      title: 'Mus Law',
       theme: ThemeData(
         primarySwatch: Colors.green,
         useMaterial3: true,

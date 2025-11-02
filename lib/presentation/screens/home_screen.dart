@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mus_law/presentation/screens/iot_dashboard_screen.dart';
+import 'package:mus_law/presentation/screens/dashboard_screen.dart';
 import 'package:mus_law/presentation/screens/profile_screen.dart';
 import 'package:mus_law/presentation/widgets/bottom_player.dart';
 import 'package:mus_law/presentation/widgets/music_card.dart';
@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const MusicHomeScreen(),
-    const IotDashboardScreen(),
+    const DashboardScreen(),
     const ProfileScreen(),
   ];
 
@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IoT Music Player'),
+        title: const Text('Mus Law'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sensors),
-            label: 'IoT',
+            label: 'Weather',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
