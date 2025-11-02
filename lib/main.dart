@@ -1,33 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:mus_law/data/repositories/auth_repository.dart';
 import 'package:mus_law/data/repositories/user_repository.dart';
+import 'package:mus_law/data/sources/api_client.dart';
 import 'package:mus_law/data/sources/shared_prefs_storage.dart';
 import 'package:mus_law/presentation/providers/auth_provider.dart';
 import 'package:mus_law/presentation/providers/connectivity_provider.dart';
 import 'package:mus_law/presentation/providers/mqtt_provider.dart';
+import 'package:mus_law/presentation/providers/posts_provider.dart'; // Додай цей імпорт
 import 'package:mus_law/presentation/screens/home_screen.dart';
 import 'package:mus_law/presentation/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   final storage = SharedPrefsStorage();
   await storage.init();
-  
+
   final authRepo = AuthRepository(storage);
   final userRepo = UserRepository(storage);
+  final apiClient = ApiClient();
 
   runApp(
     MultiProvider(
       providers: [
         Provider<AuthRepository>(create: (_) => authRepo),
         Provider<UserRepository>(create: (_) => userRepo),
+        Provider<ApiClient>(create: (_) => apiClient),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => MqttProvider()),
-        ChangeNotifierProvider(
-          create: (context) => AuthProvider(authRepo),
-        ),
+        ChangeNotifierProvider(create: (_) => AuthProvider(authRepo)),
+        ChangeNotifierProvider(create: (_) => PostsProvider(apiClient)),
       ],
       child: const MusicApp(),
     ),
@@ -70,11 +73,12 @@ class _AppWrapperState extends State<AppWrapper> {
   Future<void> _initializeApp() async {
     // ignore: inference_failure_on_instance_creation
     await Future.delayed(Duration.zero);
-    
-    // ignore: use_build_context_synchronously
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    final authProvider = Provider.of<AuthProvider>
+        // ignore: use_build_context_synchronously
+        (context, listen: false);
     await authProvider.autoLogin();
-    
+
     if (mounted) {
       setState(() {
         _isLoading = false;

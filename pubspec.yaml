@@ -5,8 +5,8 @@ publish_to: "none"
 
 version: 1.0.0+1
 
-environment: 
-  sdk: '>=3.0.0 <4.0.0'
+environment:
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -19,6 +19,7 @@ dependencies:
   connectivity_plus: ^5.0.1
   flutter_secure_storage: ^9.0.0
   shared_preferences: ^2.2.2
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

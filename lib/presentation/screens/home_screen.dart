@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mus_law/presentation/screens/dashboard_screen.dart';
+import 'package:mus_law/presentation/screens/posts_screen.dart';
 import 'package:mus_law/presentation/screens/profile_screen.dart';
 import 'package:mus_law/presentation/widgets/bottom_player.dart';
 import 'package:mus_law/presentation/widgets/music_card.dart';
@@ -17,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const MusicHomeScreen(),
     const DashboardScreen(),
+    const PostsScreen(),
     const ProfileScreen(),
   ];
 
@@ -31,7 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute<Map<dynamic, dynamic>>(
-                  builder: (_) => const ProfileScreen(),),
+                builder: (_) => const ProfileScreen(),
+              ),
             ),
           ),
         ],
@@ -40,6 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
+        backgroundColor: Colors.white,
+        elevation: 2,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.music_note),
@@ -48,6 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.sensors),
             label: 'Weather',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.article),
+            label: 'Posts',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
