@@ -1,10 +1,10 @@
 import 'package:mus_law/data/models/user_model.dart';
-import 'package:mus_law/data/sources/auth_local_storage.dart';
+import 'package:mus_law/data/sources/local_storage.dart';
 import 'package:mus_law/domain/entities/user_entity.dart';
 import 'package:mus_law/domain/repositories/i_user_repository.dart';
 
 class UserRepository implements IUserRepository {
-  final AuthLocalStorage _storage;
+  final LocalStorage _storage;
 
   UserRepository(this._storage);
 
@@ -12,11 +12,11 @@ class UserRepository implements IUserRepository {
   Future<void> updateUser(UserEntity user) async {
     final userModel = UserModel.fromEntity(user);
     await _storage.save('users_box', user.email, userModel.toJson());
-
+    
     final currentUser = _storage.get('current_user_box', 'current_user');
     if (currentUser != null && currentUser['email'] == user.email) {
-      await _storage.save(
-          'current_user_box', 'current_user', userModel.toJson(),);
+      await _storage.save('current_user_box', 'current_user', 
+      userModel.toJson(),);
     }
   }
 

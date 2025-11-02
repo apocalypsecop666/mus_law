@@ -1,10 +1,10 @@
 import 'package:mus_law/data/models/user_model.dart';
-import 'package:mus_law/data/sources/auth_local_storage.dart';
+import 'package:mus_law/data/sources/local_storage.dart';
 import 'package:mus_law/domain/entities/user_entity.dart';
 import 'package:mus_law/domain/repositories/i_auth_repository.dart';
 
 class AuthRepository implements IAuthRepository {
-  final AuthLocalStorage _storage;
+  final LocalStorage _storage;
 
   AuthRepository(this._storage);
 
@@ -17,18 +17,17 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<UserEntity?> login(String email, String password) async {
     final userData = _storage.get('users_box', email);
-    
-    if (userData != null && 
-        userData['password'] != null && 
+
+    if (userData != null &&
+        userData['password'] != null &&
         userData['password'] == password) {
-      
       final user = UserModel(
         id: userData['id'].toString(),
         name: userData['name'].toString(),
         email: userData['email'].toString(),
         password: userData['password'].toString(),
       );
-      
+
       await _storage.save('current_user_box', 'current_user', user.toJson());
       return user;
     }
@@ -43,7 +42,7 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<UserEntity?> getCurrentUser() async {
     final userData = _storage.get('current_user_box', 'current_user');
-    
+
     if (userData != null) {
       return UserModel(
         id: userData['id'].toString(),
