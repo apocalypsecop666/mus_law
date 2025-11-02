@@ -16,12 +16,14 @@ class _IotDashboardScreenState extends State<IotDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _connectToMqtt();
+    Future.delayed(const Duration(milliseconds: 500), _connectToMqtt);
   }
 
   void _connectToMqtt() {
     final mqttProvider = Provider.of<MqttProvider>(context, listen: false);
-    mqttProvider.connect();
+    if (!mqttProvider.isConnected) {
+      mqttProvider.connect();
+    }
   }
 
   @override
@@ -58,8 +60,21 @@ class _IotDashboardScreenState extends State<IotDashboardScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(
-                  'No internet connection. Some features may be limited.',
+                  'No internet connection. MQTT will not work.',
                   style: TextStyle(color: Colors.orange),
+                ),
+              ),
+            if (mqttProvider.error.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'MQTT Error: ${mqttProvider.error}',
+                  style: const TextStyle(color: Colors.red),
                 ),
               ),
             const SizedBox(height: 20),
@@ -120,7 +135,7 @@ class _IotDashboardScreenState extends State<IotDashboardScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'MQTT Broker',
+              'MQTT Status',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
@@ -140,12 +155,12 @@ class _IotDashboardScreenState extends State<IotDashboardScreen> {
             const Icon(Icons.info, size: 40, color: Colors.blue),
             const SizedBox(height: 8),
             const Text(
-              'IoT Info',
+              'MQTT Info',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
-              'Subscribe to sensor data',
+              'Topics:\n• sensor/temperature\n• sensor/humidity',
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),

@@ -1,103 +1,70 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:mus_law/core/constants/mqtt_constants.dart';
 
 class MqttProvider with ChangeNotifier {
-  MqttServerClient? _client;
+  Timer? _simulationTimer;
   bool _isConnected = false;
-  double _temperature = 0;
-  double _humidity = 0;
+  double _temperature = 20;
+  double _humidity = 50;
   String _status = 'Disconnected';
+  String _error = '';
 
   bool get isConnected => _isConnected;
   double get temperature => _temperature;
   double get humidity => _humidity;
   String get status => _status;
+  String get error => _error;
 
   Future<void> connect() async {
     try {
-      _client = MqttServerClient(
-        MqttConstants.broker,
-        MqttConstants.clientIdentifier,
-      );
-      _client!.port = MqttConstants.port;
-      _client!.logging(on: false);
-      _client!.keepAlivePeriod = MqttConstants.keepAlivePeriod;
+      _updateStatus('Simulating MQTT data (Web restrictions)');
 
-      _client!.onConnected = _onConnected;
-      _client!.onDisconnected = _onDisconnected;
+      // ignore: inference_failure_on_instance_creation
+      await Future.delayed(const Duration(seconds: 2));
 
-      final connMessage = MqttConnectMessage()
-          .withClientIdentifier(MqttConstants.clientIdentifier)
-          .startClean()
-          .withWillQos(MqttQos.atMostOnce);
+      _isConnected = true;
+      _error = '';
+      _updateStatus('Connected (Simulation)');
 
-      _client!.connectionMessage = connMessage;
-
-      _status = 'Connecting...';
-      notifyListeners();
-
-      await _client!.connect();
-
-      if (_client!.connectionStatus!.state == MqttConnectionState.connected) {
-        _subscribeToTopics();
-      }
+      _startSimulation();
     } catch (e) {
-      _status = 'Connection failed: $e';
-      notifyListeners();
+      _error = 'Simulation error: $e';
+      _updateStatus('Connection failed');
     }
   }
 
-  void _onConnected() {
-    _isConnected = true;
-    _status = 'Connected to MQTT Broker';
-    notifyListeners();
+  void _startSimulation() {
+    _simulationTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      _temperature = 20.0 + (DateTime.now().second % 15);
+      _humidity = 50.0 + (DateTime.now().second % 30);
+      _scheduleNotify();
+    });
   }
 
-  void _onDisconnected() {
-    _isConnected = false;
-    _status = 'Disconnected';
-    notifyListeners();
+  void _updateStatus(String newStatus) {
+    _status = newStatus;
+    _scheduleNotify();
   }
 
-  void _subscribeToTopics() {
-    _client!.subscribe(MqttConstants.temperatureTopic, MqttQos.atMostOnce);
-    _client!.subscribe(MqttConstants.humidityTopic, MqttQos.atMostOnce);
-
-    _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage>> messages) {
-      final message = messages[0];
-      final topic = message.topic;
-
-      if (topic == MqttConstants.temperatureTopic) {
-        final payload = _parsePayload(message);
-        _temperature = double.tryParse(payload) ?? _temperature;
-        notifyListeners();
-      } else if (topic == MqttConstants.humidityTopic) {
-        final payload = _parsePayload(message);
-        _humidity = double.tryParse(payload) ?? _humidity;
+  void _scheduleNotify() {
+    Future.microtask(() {
+      if (_status != 'Disposed') {
         notifyListeners();
       }
     });
   }
 
-  String _parsePayload(MqttReceivedMessage<MqttMessage> message) {
-    final publishMessage = message.payload as MqttPublishMessage;
-    return MqttPublishPayload.bytesToStringAsString(
-      publishMessage.payload.message,
-    );
-  }
-
   void disconnect() {
-    _client?.disconnect();
+    _simulationTimer?.cancel();
     _isConnected = false;
     _status = 'Disconnected';
-    notifyListeners();
+    _scheduleNotify();
   }
 
   @override
   void dispose() {
-    disconnect();
+    _status = 'Disposed';
+    _simulationTimer?.cancel();
     super.dispose();
   }
 }

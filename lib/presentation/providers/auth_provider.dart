@@ -19,10 +19,12 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> autoLogin() async {
     if (_isLoading) return false;
-    
+
     _isAutoLogin = true;
     _isLoading = true;
-    notifyListeners();
+
+    // Використовуємо Future.microtask для відкладеного виклику
+    Future.microtask(notifyListeners);
 
     try {
       // Check if we have stored credentials
@@ -36,7 +38,7 @@ class AuthProvider with ChangeNotifier {
           _currentUser = user;
           _isLoading = false;
           _isAutoLogin = false;
-          notifyListeners();
+          Future.microtask(notifyListeners);
           return true;
         }
       }
@@ -46,7 +48,7 @@ class AuthProvider with ChangeNotifier {
 
     _isLoading = false;
     _isAutoLogin = false;
-    notifyListeners();
+    Future.microtask(notifyListeners);
     return false;
   }
 
@@ -54,14 +56,14 @@ class AuthProvider with ChangeNotifier {
     if (_isLoading) return false;
 
     _isLoading = true;
-    notifyListeners();
+    Future.microtask(notifyListeners);
 
     try {
       // Check internet connection
       final hasInternet = await ConnectivityUtils.hasInternetConnection();
       if (!hasInternet) {
         _isLoading = false;
-        notifyListeners();
+        Future.microtask(notifyListeners);
         return false;
       }
 
@@ -71,9 +73,9 @@ class AuthProvider with ChangeNotifier {
         // Save credentials for auto-login
         await SecureStorage.saveUserCredentials(email, password);
         await SecureStorage.saveSessionToken(DateTime.now().toIso8601String());
-        
+
         _isLoading = false;
-        notifyListeners();
+        Future.microtask(notifyListeners);
         return true;
       }
     } catch (e) {
@@ -81,7 +83,7 @@ class AuthProvider with ChangeNotifier {
     }
 
     _isLoading = false;
-    notifyListeners();
+    Future.microtask(notifyListeners);
     return false;
   }
 
@@ -89,13 +91,13 @@ class AuthProvider with ChangeNotifier {
     if (_isLoading) return false;
 
     _isLoading = true;
-    notifyListeners();
+    Future.microtask(notifyListeners);
 
     try {
       final hasInternet = await ConnectivityUtils.hasInternetConnection();
       if (!hasInternet) {
         _isLoading = false;
-        notifyListeners();
+        Future.microtask(notifyListeners);
         return false;
       }
 
@@ -107,13 +109,13 @@ class AuthProvider with ChangeNotifier {
       );
 
       await _authRepository.register(newUser);
-      
+
       _isLoading = false;
-      notifyListeners();
+      Future.microtask(notifyListeners);
       return true;
     } catch (e) {
       _isLoading = false;
-      notifyListeners();
+      Future.microtask(notifyListeners);
       return false;
     }
   }
@@ -125,20 +127,20 @@ class AuthProvider with ChangeNotifier {
     }
 
     _isLoading = true;
-    notifyListeners();
+    Future.microtask(notifyListeners);
 
     try {
       await _authRepository.logout();
       await SecureStorage.deleteSessionToken();
       await SecureStorage.deleteUserCredentials();
-      
+
       _currentUser = null;
     } catch (e) {
       // Empty case
     }
 
     _isLoading = false;
-    notifyListeners();
+    Future.microtask(notifyListeners);
   }
 
   void confirmLogout() {

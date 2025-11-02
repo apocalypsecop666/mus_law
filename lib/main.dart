@@ -26,9 +26,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => MqttProvider()),
         ChangeNotifierProvider(
-          create: (context) => AuthProvider(
-            Provider.of<AuthRepository>(context, listen: false),
-          ),
+          create: (context) => AuthProvider(authRepo),
         ),
       ],
       child: const MusicApp(),
@@ -48,6 +46,7 @@ class MusicApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const AppWrapper(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -69,12 +68,18 @@ class _AppWrapperState extends State<AppWrapper> {
   }
 
   Future<void> _initializeApp() async {
+    // ignore: inference_failure_on_instance_creation
+    await Future.delayed(Duration.zero);
+    
+    // ignore: use_build_context_synchronously
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.autoLogin();
     
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
